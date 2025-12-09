@@ -54,7 +54,18 @@ except Exception:
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)  # For session management
-CORS(app, supports_credentials=True)
+CORS(
+    app,
+    resources={
+        r"/api/*": {
+            "origins": [
+                "https://asl-frontend-0tid.onrender.com",  # deployed frontend
+                "http://localhost:3001",                   # local dev (if you use it)
+                "http://localhost:5173",                   # Vite default dev port
+            ]
+        }
+    },
+)
 
 # Configuration
 app.config['UPLOAD_FOLDER'] = tempfile.gettempdir()
