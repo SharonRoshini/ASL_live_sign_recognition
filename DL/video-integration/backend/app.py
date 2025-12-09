@@ -1183,4 +1183,11 @@ if __name__ == "__main__":
     print("  POST /api/letter-detection/clear - Clear all text")
     print("  GET  /api/letter-detection/state - Get current state")
     print("=" * 60)
-    app.run(debug=False, use_reloader=False, port=5001, threaded=True)
+    port = int(os.environ.get("PORT", 5001))
+    app.run(
+    host="0.0.0.0",
+    port=port,
+    debug=False,
+    use_reloader=False,
+    threaded=True
+)
