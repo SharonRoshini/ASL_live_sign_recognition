@@ -1,0 +1,19 @@
+# Render.com deployment configuration
+# This file configures the frontend static site deployment
+
+services:
+  # Frontend Static Site (Free Tier)
+  - type: web
+    name: gesture2globe-frontend
+    env: static
+    buildCommand: cd video-integration/frontend && npm install && npm run build
+    staticPublishPath: ./video-integration/frontend/dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        # Set this to your backend URL once deployed
+        # Example: https://your-backend.onrender.com
+        value: http://localhost:5001  # Update this after backend deployment
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

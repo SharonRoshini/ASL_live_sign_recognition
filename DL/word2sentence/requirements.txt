@@ -1,0 +1,15 @@
+# ============================================================================
+# NOTE: This file is deprecated. Please use the consolidated requirements.txt
+#       at the project root: ../../requirements.txt
+# ============================================================================
+# This file is kept for backward compatibility only.
+# Install dependencies from root: pip install -r requirements.txt
+# ============================================================================
+
+torch>=2.0.0
+transformers>=4.30.0
+nltk>=3.8
+soundfile>=0.12.0
+tqdm>=4.65.0
+colorama>=0.4.6
+numpy>=1.21.0,<2.0.0

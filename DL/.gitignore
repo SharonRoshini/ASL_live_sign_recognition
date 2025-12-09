@@ -1,0 +1,120 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.so
+.Python
+*.egg
+*.egg-info/
+.installed.cfg
+
+# Build and distribution
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vite / Frontend Build
+video-integration/frontend/dist/
+video-integration/frontend/.vite/
+video-integration/frontend/build/
+
+# Environment files
+.env
+.env.*
+*.code-workspace
+
+# Logs and outputs
+*.log
+logs/
+asl-tts-pipeline/src/logs/
+TGCN-Training/code/TGCN/output/
+
+# Generated audio files
+*.wav
+*.mp3
+video-integration/backend/static/audio/
+asl-tts-pipeline/src/output_audio/
+
+# Model checkpoints (keep converted ONNX models)
+*.pt
+*.pth
+
+# Media files
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+
+# MediaPipe models (cached)
+*.pb
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.iml
+.project
+.pydevproject
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Test coverage
+coverage/
+.nyc_output/
+*.lcov
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Project specific
+TGCN-Training/data/pose_per_individual_videos/**/*.json
+
+# Video integration specific
+video-integration/backend/uploads/
+video-integration/backend/temp/
+
+# ASL TTS Pipeline specific
+asl-tts-pipeline/src/output_audio/
+asl-tts-pipeline/output_audio/
+asl-tts-pipeline/src/logs/
+asl-tts-pipeline/logs/
+asl-tts-pipeline/test_*.wav
+asl-tts-pipeline/*_test.wav
+asl-tts-pipeline/*.tmp
+asl-tts-pipeline/*.temp
+
+# removing asl_data.npm in asl-letter-training
+asl-letter-training/asl_data.npz
