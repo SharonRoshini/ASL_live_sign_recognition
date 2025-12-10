@@ -54,17 +54,29 @@ except Exception:
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)  # For session management
+
+# Define allowed origins
+allowed_origins = [
+    "https://asl-frontend-0tid.onrender.com",  # deployed frontend
+    "http://localhost:3001",                   # local dev (if you use it)
+    "http://localhost:5173",                   # Vite default dev port
+]
+
+# Configure CORS for all routes
 CORS(
     app,
     resources={
         r"/api/*": {
-            "origins": [
-                "https://asl-frontend-0tid.onrender.com",  # deployed frontend
-                "http://localhost:3001",                   # local dev (if you use it)
-                "http://localhost:5173",                   # Vite default dev port
-            ]
+            "origins": allowed_origins
+        },
+        r"/model-status": {
+            "origins": allowed_origins
+        },
+        r"/health": {
+            "origins": allowed_origins
         }
     },
+    supports_credentials=True
 )
 
 # Configuration
@@ -340,7 +352,9 @@ def _run_tts_pipeline(text_to_speak: str, language: str = 'en'):
             # Return URL path for serving
             filename_only = os.path.basename(output_path)
             print(f"[TTS] Generated: {filename_only}")
-            return {'audio_url': f"http://localhost:5001/audio/{filename_only}"}
+            # Use environment variable for base URL, fallback to localhost for dev
+            base_url = os.environ.get('BASE_URL', 'http://localhost:5001')
+            return {'audio_url': f"{base_url}/audio/{filename_only}"}
         
         return None
         

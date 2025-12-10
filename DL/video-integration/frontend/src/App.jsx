@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
-import { Hands } from '@mediapipe/hands'
 import { ThemeToggle } from './components/theme-toggle'
 import './App.css'
 import LetterDetection from './LetterDetection'
@@ -184,7 +183,15 @@ function App() {
     // Initialize MediaPipe Hands with continuous detection
     const initializeHands = async () => {
       try {
-        const hands = new Hands({
+        // Dynamic import to handle production builds
+        const mediapipeHands = await import('@mediapipe/hands')
+        const HandsClass = mediapipeHands.Hands || mediapipeHands.default?.Hands || mediapipeHands.default
+        
+        if (!HandsClass) {
+          throw new Error('Hands class not found in MediaPipe module')
+        }
+        
+        const hands = new HandsClass({
           locateFile: (file) => {
             return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}`
           }
@@ -215,6 +222,8 @@ function App() {
         console.log('[HANDS] MediaPipe Hands initialized with continuous detection')
       } catch (error) {
         console.error('[HANDS] Error initializing MediaPipe Hands:', error)
+        // Set a flag to indicate MediaPipe is not available
+        handDetectionResultRef.current = false
       }
     }
     
@@ -456,10 +465,17 @@ function App() {
           }, 3000)
           
           try {
-            handsRef.current.send({ image: canvas })
+            if (handsRef.current && typeof handsRef.current.send === 'function') {
+              handsRef.current.send({ image: canvas })
+            } else {
+              // MediaPipe not initialized, skip hand detection
+              handDetectionProcessingRef.current = false
+              handDetectionResultRef.current = false
+            }
           } catch (error) {
             console.error('[HANDS] Error sending frame to MediaPipe:', error)
             handDetectionProcessingRef.current = false // Reset on error
+            handDetectionResultRef.current = false
             if (handDetectionTimeoutRef.current) {
               clearTimeout(handDetectionTimeoutRef.current)
               handDetectionTimeoutRef.current = null
