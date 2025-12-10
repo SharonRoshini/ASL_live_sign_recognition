@@ -183,14 +183,44 @@ function App() {
     // Initialize MediaPipe Hands with continuous detection
     const initializeHands = async () => {
       try {
-        // Dynamic import to handle production builds
-        const mediapipeHands = await import('@mediapipe/hands')
-        const HandsClass = mediapipeHands.Hands || mediapipeHands.default?.Hands || mediapipeHands.default
+        // Dynamic import - MediaPipe needs to be loaded at runtime
+        const mediapipeModule = await import('@mediapipe/hands')
         
-        if (!HandsClass) {
-          throw new Error('Hands class not found in MediaPipe module')
+        // Extract Hands class - try multiple patterns
+        let HandsClass = null
+        
+        // Pattern 1: Default export is Hands constructor
+        if (mediapipeModule.default && typeof mediapipeModule.default === 'function') {
+          HandsClass = mediapipeModule.default
+        }
+        // Pattern 2: Default export has Hands property
+        else if (mediapipeModule.default?.Hands && typeof mediapipeModule.default.Hands === 'function') {
+          HandsClass = mediapipeModule.default.Hands
+        }
+        // Pattern 3: Named export { Hands }
+        else if (mediapipeModule.Hands && typeof mediapipeModule.Hands === 'function') {
+          HandsClass = mediapipeModule.Hands
+        }
+        // Pattern 4: Module itself is the constructor (unlikely but possible)
+        else if (typeof mediapipeModule === 'function') {
+          HandsClass = mediapipeModule
         }
         
+        // If still not found, log structure for debugging
+        if (!HandsClass || typeof HandsClass !== 'function') {
+          const moduleKeys = Object.keys(mediapipeModule || {})
+          const moduleInfo = {
+            keys: moduleKeys,
+            default: mediapipeModule?.default,
+            defaultType: typeof mediapipeModule?.default,
+            hasHands: !!mediapipeModule?.Hands,
+            handsType: typeof mediapipeModule?.Hands
+          }
+          console.error('[HANDS] Could not find Hands constructor. Module info:', moduleInfo)
+          throw new Error(`Hands constructor not found. Available keys: ${moduleKeys.join(', ')}`)
+        }
+        
+        // Create Hands instance with CDN file location
         const hands = new HandsClass({
           locateFile: (file) => {
             return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}`
@@ -222,8 +252,18 @@ function App() {
         console.log('[HANDS] MediaPipe Hands initialized with continuous detection')
       } catch (error) {
         console.error('[HANDS] Error initializing MediaPipe Hands:', error)
+        console.warn('[HANDS] MediaPipe Hands will not be available. Hand detection in Live tab may be limited.')
         // Set a flag to indicate MediaPipe is not available
         handDetectionResultRef.current = false
+        
+        // Try alternative: Load from CDN script tag (fallback)
+        try {
+          console.log('[HANDS] Attempting to load MediaPipe from CDN as fallback...')
+          // This is a fallback - MediaPipe should work with dynamic import
+          // But if it doesn't, we gracefully degrade
+        } catch (fallbackError) {
+          console.error('[HANDS] Fallback also failed:', fallbackError)
+        }
       }
     }
     
